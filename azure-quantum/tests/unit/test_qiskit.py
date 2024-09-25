@@ -282,7 +282,7 @@ class TestQiskit(QuantumTestBase):
 
         self.assertEqual(AzureQuantumJob._qir_to_qiskit_bitstring(azure_register), bitstring)
         self.assertEqual(AzureQuantumJob._qir_to_qiskit_bitstring(azure_registers), " ".join(
-            f"{bit}10" for bit in reversed(bits)
+            f"{bit}10" for bit in bits
         ))
         self.assertEqual(AzureQuantumJob._qir_to_qiskit_bitstring(bitstring), bitstring)
 

@@ -392,6 +392,7 @@ class MicrosoftEstimator(Target):
             output_data_format="microsoft.resource-estimates.v1",
             provider_id="microsoft-qc",
             content_type=ContentType.json,
+            target_profile="Adaptive_RI",
             **kwargs
         )
 
@@ -422,14 +423,15 @@ class MicrosoftEstimator(Target):
             warnings.warn("The 'shots' parameter is ignored in resource estimation job.")
 
         try:
-            from qiskit import QuantumCircuit, transpile
-            from qiskit_qir import to_qir_module
-            from qiskit_qir.visitor import SUPPORTED_INSTRUCTIONS
+            from qiskit import QuantumCircuit
+            from qsharp.interop.qiskit import ResourceEstimatorBackend
+            from pyqir import Context, Module
+
             if isinstance(input_data, QuantumCircuit):
-                input_data = transpile(input_data,
-                                       basis_gates=SUPPORTED_INSTRUCTIONS,
-                                       optimization_level=0)
-                (module, _) = to_qir_module(input_data, record_output=False)
+
+                backend = ResourceEstimatorBackend()
+                qir_str = backend.qir(input_data)
+                module = Module.from_ir(Context(), qir_str)
                 input_data = module.bitcode
         finally:
             return super().submit(
