@@ -482,13 +482,13 @@ class AzureQirBackend(AzureBackendBase):
             map(get_func_name, filter(pyqir.is_entry_point, module.functions))
         )
 
-        if not to_qir_kwargs["skip_transpilation"]:
+        if not skip_transpilation:
             # We'll only log the QIR again if we performed a transpilation.
             if logger.isEnabledFor(logging.DEBUG):
                 qir = str(module)
                 logger.debug(f"QIR (Post-transpilation):\n{qir}")
 
-        if not "items" in input_params:
+        if "items" not in input_params:
             arguments = input_params.pop("arguments", [])
             input_params["items"] = [
                 {"entryPoint": name, "arguments": arguments} for name in entry_points
