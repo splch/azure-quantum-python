@@ -457,10 +457,12 @@ class AzureQirBackend(AzureBackendBase):
         return str(module)
 
     def _translate_input(
-        self, circuits: List[QuantumCircuit], input_params: Dict[str, Any]
+        self, circuits: Union[QuantumCircuit, List[QuantumCircuit]], input_params: Dict[str, Any]
     ) -> bytes:
         """Translates the input values to the QIR expected by the Backend."""
         logger.info(f"Using QIR as the job's payload format.")
+        if not (isinstance(circuits, list)):
+            circuits = [circuits]
 
         target_profile = self._get_target_profile(input_params)
 

@@ -424,13 +424,20 @@ class MicrosoftEstimator(Target):
 
         try:
             from qiskit import QuantumCircuit
+            from qsharp import TargetProfile
             from qsharp.interop.qiskit import ResourceEstimatorBackend
             from pyqir import Context, Module
 
             if isinstance(input_data, QuantumCircuit):
 
                 backend = ResourceEstimatorBackend()
-                qir_str = backend.qir(input_data, target_profile=self.target_profile)
+                # Unrestricted isn't a valid target profile for QIR. Check if
+                # the target profile is set to "Base" and set the target
+                # profile to "Base" if so, default to "Adaptive_RI" otherwise.
+                target_profile = TargetProfile.Adaptive_RI
+                if self.target_profile == "Base":
+                    target_profile = TargetProfile.Base
+                qir_str = backend.qir(input_data, target_profile=target_profile)
                 context = Context()
                 module = Module.from_ir(context, qir_str)
                 # Add NOOP for recording output tuples
