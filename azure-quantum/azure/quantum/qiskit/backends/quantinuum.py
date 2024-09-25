@@ -95,9 +95,6 @@ class QuantinuumQirBackendBase(AzureQirBackend):
             }
         )
         return config
-    
-    def _basis_gates(self) -> List[str]:
-        return QUANTINUUM_QIR_BASIS_GATES
 
     def _get_n_qubits(self, name):
         return _get_n_qubits(name)
