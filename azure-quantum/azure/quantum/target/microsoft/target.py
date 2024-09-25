@@ -430,8 +430,24 @@ class MicrosoftEstimator(Target):
             if isinstance(input_data, QuantumCircuit):
 
                 backend = ResourceEstimatorBackend()
-                qir_str = backend.qir(input_data)
-                module = Module.from_ir(Context(), qir_str)
+                qir_str = backend.qir(input_data, target_profile=self.target_profile)
+                context = Context()
+                module = Module.from_ir(context, qir_str)
+                # Add NOOP for recording output tuples
+                # the service isn't set up to handle any output recording calls
+                # and the Q# compiler will always emit them.
+                noop_tuple_record_output = """; NOOP the extern calls to recording output tuples
+define void @__quantum__rt__tuple_record_output(i64, i8*) {
+ret void
+}"""
+                noop_tuple_record_output_module = Module.from_ir(
+                    context, noop_tuple_record_output
+                )
+                module.link(noop_tuple_record_output_module)
+
+                err = module.verify()
+                if err is not None:
+                    raise Exception(err)
                 input_data = module.bitcode
         finally:
             return super().submit(
