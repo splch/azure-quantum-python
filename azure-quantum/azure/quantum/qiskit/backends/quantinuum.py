@@ -84,7 +84,7 @@ class QuantinuumQirBackendBase(AzureQirBackend):
             **{
                 cls._SHOTS_PARAM_NAME: _DEFAULT_SHOTS_COUNT
             },
-            target_profile=TargetProfile.Base,
+            target_profile=TargetProfile.Adaptive_RI,
         )
 
     def _azure_config(self) -> Dict[str, str]:

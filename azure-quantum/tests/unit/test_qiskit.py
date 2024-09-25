@@ -199,15 +199,6 @@ class TestQiskit(QuantumTestBase):
         circuit.measure([0], [0])
         return circuit
 
-    def _endianness(self, pos=0):
-        self.assertLess(pos, 3)
-        qr = QuantumRegister(3)
-        cr = [ClassicalRegister(3) for _ in range(3)]
-        circuit = QuantumCircuit(qr, *cr, name=f"endian{pos}cr3")
-        circuit.x(pos)
-        circuit.measure(qr[pos], cr[pos][pos])
-        return circuit
-
     def _controlled_s(self):
         circuit = QuantumCircuit(3)
         circuit.t(0)
@@ -1858,7 +1849,11 @@ class TestQiskit(QuantumTestBase):
         backend = provider.get_backend("qci.simulator")
         shots = 100
 
-        circuit = self._endianness(pos=endian_pos)
+        qr = QuantumRegister(3)
+        cr = [ClassicalRegister(3) for _ in range(3)]
+        circuit = QuantumCircuit(qr, *cr, name=f"endian0cr3")
+        circuit.x(0)
+        circuit.measure(qr[0], cr[0][0])
         circuit.metadata = {"some": "data"}
 
         qiskit_job = backend.run(circuit, shots=shots)
